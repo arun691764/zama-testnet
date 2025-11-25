@@ -1,158 +1,423 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Zama Demo Testnet - Single File Version</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Zama Demo Testnet - Demo</title>
 <style>
-body {
-  margin: 0; font-family: Arial; background: #0f1724; color: #fff;
-}
-header {
-  background:#111a2b; padding:15px; display:flex; justify-content:space-between; align-items:center;
-}
-button{
-  padding:8px 14px; border:none; border-radius:6px; cursor:pointer; font-weight:bold;
-}
-#connect {background:#ffd400; color:#000;}
-#faucet,#sendTx,#encryptBtn,#decryptBtn {background:#303a4a; color:#fff;}
-.card{
-  background:#111a2b; padding:15px; margin:20px; border-radius:8px;
-}
-pre{background:#000; padding:10px; height:120px; overflow:auto;}
-input,textarea{
-  width:100%; padding:8px; margin-top:6px; border-radius:6px; border:1px solid #333; background:#0b1220; color:white;
-}
-.nodeBox{display:flex; gap:8px;}
-.node{
-  background:#1a2438; padding:8px; border-radius:6px; width:90px; text-align:center;
-}
-.green{color:#00ff87;}
-.red{color:#ff4d4d;}
+:root{--bg:#071827;--card:#0b1220;--accent:#ffd400;--muted:#9aa6b2;--glass:rgba(255,255,255,0.02);--success:#16a34a;}
+*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;padding:0;color:#e6eef6}
+body{background:linear-gradient(180deg,#04121a 0%, #071828 100%);min-height:100vh;}
+.container{max-width:1100px;margin:20px auto;display:flex;gap:16px;padding:18px}
+.left{flex:1;display:flex;flex-direction:column;gap:14px}
+.right{width:360px;display:flex;flex-direction:column;gap:14px}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--glass)}
+.logo{height:44px;border-radius:8px;object-fit:cover}
+.btn{background:var(--accent);color:#111;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+.small{font-size:13px;color:var(--muted)}
+.area{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+.row{display:flex;gap:8px;align-items:center}
+.actions{display:flex;gap:8px;margin-top:8px}
+.logbox{background:#020617;padding:10px;border-radius:8px;color:#bfe7ff;overflow:auto;height:220px;white-space:pre-wrap}
+.swap-form input[type=number]{width:140px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+.center{display:flex;align-items:center;justify-content:center;flex-direction:column}
+.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:12px}
+
+/* Welcome modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:200}
+.modal{background:#071827;padding:20px;border-radius:12px;max-width:520px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+.modal h2{margin-bottom:8px}
+.modal p{color:var(--muted);margin-bottom:12px}
+
+/* responsive */
+@media(max-width:900px){.container{flex-direction:column;padding:12px}.right{width:100%}}
 </style>
 </head>
 <body>
 
-<header>
-  <h2>Zama Demo Testnet</h2>
-  <button id="connect">Connect Wallet</button>
+<!-- Welcome modal (shows on load) -->
+<div id="welcome" class="modal-backdrop" role="dialog" aria-modal="true" style="display:flex;">
+  <div class="modal">
+    <div style="display:flex;gap:12px;align-items:center">
+      <!-- Use your uploaded logo path here -->
+      <img src="/mnt/data/Screenshot.png" class="logo" alt="logo"/>
+      <div>
+        <h2>Welcome to Zama Demo Testnet</h2>
+        <p class="small">A simulated demo interface — educational purposes only. Try the faucet, swap tokens, and the encrypt/decrypt demo. Your claims are stored locally (one claim per wallet or per name/email).</p>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:12px;gap:8px">
+      <button id="startBtn" class="btn">Start Demo</button>
+      <button id="skipBtn" class="btn ghost">Skip</button>
+    </div>
+  </div>
+</div>
+
+<header class="topbar">
+  <div style="display:flex;gap:12px;align-items:center">
+    <img src="/mnt/data/Screenshot.png" class="logo" alt="logo"/>
+    <div>
+      <div style="font-weight:700">Zama Demo Testnet</div>
+      <div class="small">Simulated demo interface — no real funds or blockchain</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:12px;align-items:center">
+    <div class="small" id="netBadge">Network: zama-demo (Chain 9999)</div>
+    <button id="connectBtn" class="btn">Connect Wallet</button>
+  </div>
 </header>
 
-<div class="card">
-  <h3>Wallet</h3>
-  <p>Address: <span id="wallet">Not Connected</span></p>
-  <p>Balance: <span id="balance">0</span> tZAMA</p>
-  <button id="faucet">Get Test Tokens (Faucet)</button>
-</div>
+<main class="container">
+  <section class="left">
+    <div class="card">
+      <h3>Wallet & Faucet</h3>
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div class="small">Address</div>
+          <div id="walletAddr">Not connected</div>
+        </div>
+        <div>
+          <div class="small">Balances</div>
+          <div id="balances">tZAMA: 0 • tUSDC: 0</div>
+        </div>
+      </div>
 
-<div class="card">
-  <h3>Encrypt / Decrypt Demo</h3>
-  <textarea id="plain" placeholder="Enter text"></textarea>
-  <button id="encryptBtn">Encrypt</button>
-  <button id="decryptBtn">Decrypt</button>
-  <pre id="encOutput">Encrypted / Decrypted output will show here</pre>
-</div>
+      <div style="margin-top:10px" class="small">
+        <label>Name or Email (required to claim faucet once)</label><br/>
+        <input id="claimId" class="area" placeholder="Enter your name or email"/>
+      </div>
 
-<div class="card">
-  <h3>Run Transaction</h3>
-  <button id="sendTx">Send Fake Transaction</button>
-  <pre id="txBox">TX output will appear here</pre>
-</div>
+      <div class="actions" style="margin-top:10px">
+        <button id="faucetZ" class="btn">Get 100 tZAMA (Claim)</button>
+        <button id="faucetU" class="btn ghost">Get 100 tUSDC (Claim)</button>
+        <button id="clearBtn" class="btn ghost">Clear Logs</button>
+      </div>
 
-<div class="card">
-  <h3>MPC Nodes</h3>
-  <div class="nodeBox" id="nodes"></div>
-</div>
+      <div style="margin-top:8px" class="small">Faucet rule: one claim per wallet OR per name/email. Claims are stored in your browser (localStorage).</div>
+    </div>
 
-<div class="card">
-  <h3>Event Logs</h3>
-  <pre id="logs"></pre>
-</div>
+    <div class="card">
+      <h3>Encrypt / Decrypt Demo</h3>
+      <div class="small">This demo uses simple Base64 encode/decode to simulate encryption & decryption times.</div>
+      <textarea id="plain" class="area" placeholder="Enter text to encrypt"></textarea>
+      <div class="actions">
+        <button id="encryptBtn" class="btn">Encrypt</button>
+        <button id="decryptBtn" class="btn ghost">Decrypt</button>
+      </div>
+      <div style="margin-top:10px">
+        <label class="small">Output</label>
+        <pre id="output" class="logbox">-</pre>
+        <div class="small">Decryption time: <span id="decTime">-</span> ms</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Swap (Simple)</h3>
+      <div class="small">Swap between tZAMA and tUSDC with a simulated rate. Swap count per wallet is tracked.</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:10px" class="swap-form">
+        <select id="fromToken" class="area" style="width:120px">
+          <option value="ZAMA">tZAMA</option>
+          <option value="USDC">tUSDC</option>
+        </select>
+        <input id="amount" type="number" min="0" step="0.1" placeholder="Amount" />
+        <button id="swapBtn" class="btn">Swap</button>
+      </div>
+      <div style="margin-top:10px" class="small">
+        <div>Exchange rate: <span id="rateDisplay">1 tZAMA = 1.2 tUSDC</span></div>
+        <div>Swaps done (this wallet): <span id="swapCount">0</span></div>
+        <div style="margin-top:6px">
+          <label><input type="checkbox" id="shareApr" /> Share APR on X after swap</label>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <aside class="right">
+    <div class="card">
+      <h3>MPC Nodes</h3>
+      <div id="nodes" class="small">Loading nodes...</div>
+      <div style="margin-top:8px" class="actions">
+        <button id="refreshNodes" class="btn ghost">Refresh</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Transactions / Logs</h3>
+      <div id="lastTx" class="small">Last TX: -</div>
+      <div style="margin-top:8px" class="logbox" id="logs">No logs yet.</div>
+    </div>
+
+    <div class="card center">
+      <div class="small">Block Height</div>
+      <div id="blockHeight" style="font-weight:700;font-size:18px">120000</div>
+      <div style="margin-top:8px" class="small">Chain: zama-demo</div>
+    </div>
+  </aside>
+</main>
+
+<div class="footer">Demo built using <a href="https://docs.zama.org/protocol" target="_blank" style="color:#a5b4fc">Zama Protocol docs</a> as reference. Exported single-file for easy GitHub Pages deploy.</div>
 
 <script>
-// ------------------ WALLET ------------------
+/* Demo v2 script with:
+   - welcome modal using uploaded logo path (/mnt/data/Screenshot.png)
+   - faucet: one claim per wallet or per name/email (localStorage)
+   - swap count per wallet (localStorage)
+   - share APR on X (opens tweet intent)
+*/
+const connectBtn = document.getElementById('connectBtn');
+const walletAddrEl = document.getElementById('walletAddr');
+const balancesEl = document.getElementById('balances');
+const faucetZ = document.getElementById('faucetZ');
+const faucetU = document.getElementById('faucetU');
+const encryptBtn = document.getElementById('encryptBtn');
+const decryptBtn = document.getElementById('decryptBtn');
+const plainEl = document.getElementById('plain');
+const outputEl = document.getElementById('output');
+const decTimeEl = document.getElementById('decTime');
+const logsEl = document.getElementById('logs');
+const clearBtn = document.getElementById('clearBtn');
+const nodesEl = document.getElementById('nodes');
+const refreshNodes = document.getElementById('refreshNodes');
+const blockHeightEl = document.getElementById('blockHeight');
+const startBtn = document.getElementById('startBtn');
+const skipBtn = document.getElementById('skipBtn');
+const welcome = document.getElementById('welcome');
+const swapBtn = document.getElementById('swapBtn');
+const fromToken = document.getElementById('fromToken');
+const amountInput = document.getElementById('amount');
+const rateDisplay = document.getElementById('rateDisplay');
+const lastTx = document.getElementById('lastTx');
+const swapCountEl = document.getElementById('swapCount');
+const shareAprCheckbox = document.getElementById('shareApr');
+const claimIdInput = document.getElementById('claimId');
+
 let wallet = null;
-let balance = 0;
-const logBox = document.getElementById("logs");
+let balances = { ZAMA:0, USDC:0 };
+let logs = [];
+let blockHeight = 120000;
+let rate = 1.2; // 1 ZAMA = 1.2 USDC default
 
-function log(msg){
-  logBox.innerHTML = msg + "\\n" + logBox.innerHTML;
+function pushLog(obj){
+  obj.time = new Date().toLocaleTimeString();
+  logs.unshift(obj);
+  renderLogs();
 }
 
-document.getElementById("connect").onclick = ()=>{
-  if(wallet === null){
-    wallet = "0x" + Math.random().toString(16).substr(2,8);
-    document.getElementById("wallet").textContent = wallet;
-    log("Wallet connected: " + wallet);
+function renderLogs(){
+  logsEl.textContent = logs.slice(0,200).map(l=>JSON.stringify(l,null,2)).join('\\n\\n');
+  balancesEl.textContent = `tZAMA: ${balances.ZAMA} • tUSDC: ${balances.USDC}`;
+  const confirmed = logs.find(l=>l.event==='tx_confirmed');
+  lastTx.textContent = confirmed ? ('Last TX: '+confirmed.tx) : 'Last TX: -';
+  swapCountEl.textContent = getSwapCount();
+}
+
+// localStorage helpers
+function storageKeyForWallet(addr){ return 'demo_claims_wallet_' + addr; }
+function storageKeyForId(id){ return 'demo_claims_id_' + id; }
+function storageSwapKey(addr){ return 'demo_swap_count_' + addr; }
+
+function getSwapCount(){
+  if(!wallet) return 0;
+  const k = storageSwapKey(wallet);
+  return parseInt(localStorage.getItem(k) || '0', 10);
+}
+function incrementSwapCount(){
+  if(!wallet) return;
+  const k = storageSwapKey(wallet);
+  const v = parseInt(localStorage.getItem(k) || '0',10)+1;
+  localStorage.setItem(k, String(v));
+  swapCountEl.textContent = v;
+}
+
+// wallet connect (fake)
+connectBtn.addEventListener('click', ()=>{
+  if(!wallet){
+    wallet = '0x'+Math.random().toString(16).substr(2,12);
+    walletAddrEl.textContent = wallet;
+    connectBtn.textContent = 'Disconnect';
+    pushLog({event:'wallet_connected', address:wallet});
+    // load balances from storage if exist
+    const balKey = 'demo_balances_' + wallet;
+    const b = localStorage.getItem(balKey);
+    if(b){ balances = JSON.parse(b); }
+    renderLogs();
   } else {
-    log("Wallet disconnected.");
+    pushLog({event:'wallet_disconnected', address:wallet});
     wallet = null;
-    document.getElementById("wallet").textContent = "Not Connected";
+    walletAddrEl.textContent = 'Not connected';
+    connectBtn.textContent = 'Connect Wallet';
+    renderLogs();
   }
-};
+});
 
-// ------------------ FAUCET ------------------
-document.getElementById("faucet").onclick = ()=>{
-  if(wallet === null){ alert("Connect wallet first!"); return; }
-  balance += 100;
-  document.getElementById("balance").textContent = balance;
-  log("Faucet added 100 tZAMA to wallet.");
-};
-
-// ------------------ ENCRYPT / DECRYPT ------------------
-document.getElementById("encryptBtn").onclick = ()=>{
-  let text = document.getElementById("plain").value;
-  if(!text){ alert("Enter text"); return; }
-  let enc = btoa(text);
-  document.getElementById("encOutput").textContent = enc;
-  log("Encrypted text generated.");
-};
-
-document.getElementById("decryptBtn").onclick = ()=>{
-  let enc = document.getElementById("encOutput").textContent;
-  try{
-    let dec = atob(enc);
-    document.getElementById("encOutput").textContent = dec;
-    log("Decrypted text generated.");
-  } catch(e){
-    alert("Invalid encrypted text!");
-  }
-};
-
-// ------------------ TRANSACTION ------------------
-document.getElementById("sendTx").onclick = ()=>{
-  if(!wallet){ alert("Connect wallet"); return; }
-  if(balance <= 0){ alert("Not enough balance"); return; }
-
-  let tx = {
-    hash: "0x" + Math.random().toString(16).substr(2,32),
-    status: "confirmed",
-    time: (Math.random()*1.5+0.5).toFixed(2) + "s"
-  };
-
-  balance -= 1;
-  document.getElementById("balance").textContent = balance;
-  document.getElementById("txBox").textContent = JSON.stringify(tx,null,2);
-  log("Transaction sent: " + tx.hash);
-};
-
-// ------------------ MPC NODES ------------------
-function loadNodes(){
-  let box = document.getElementById("nodes");
-  box.innerHTML = "";
-  for(let i=1;i<=5;i++){
-    let online = Math.random() > 0.2;
-    box.innerHTML += `
-      <div class="node">
-        <b>Node ${i}</b><br>
-        <span class="${online?'green':'red'}">
-          ${online?'ONLINE':'OFFLINE'}
-        </span>
-      </div>`;
-  }
-  log("Refreshed MPC nodes.");
+// faucet claim checks
+function canClaimForWallet(addr){
+  const key = storageKeyForWallet(addr);
+  return !localStorage.getItem(key);
 }
-loadNodes();
-setInterval(loadNodes, 5000);
+function canClaimForId(id){
+  const key = storageKeyForId(id);
+  return !localStorage.getItem(key);
+}
+function markClaimForWallet(addr){
+  const key = storageKeyForWallet(addr);
+  localStorage.setItem(key, JSON.stringify({time: new Date().toISOString()}));
+}
+function markClaimForId(id){
+  const key = storageKeyForId(id);
+  localStorage.setItem(key, JSON.stringify({time: new Date().toISOString()}));
+}
+
+// faucet Z
+faucetZ.addEventListener('click', ()=>{
+  const id = (claimIdInput.value || '').trim();
+  if(!wallet && !id){ alert('Connect wallet or enter a name/email to claim'); return; }
+  if(wallet && !canClaimForWallet(wallet)){
+    alert('This wallet already claimed faucet once.');
+    return;
+  }
+  if(id && !canClaimForId(id)){
+    alert('This name/email already claimed faucet once.');
+    return;
+  }
+  const amount = 100;
+  balances.ZAMA = Math.round((balances.ZAMA + amount)*10000)/10000;
+  pushLog({event:'faucet', token:'tZAMA', amount, by: wallet || id});
+  if(wallet) markClaimForWallet(wallet);
+  if(id) markClaimForId(id);
+  if(wallet){ localStorage.setItem('demo_balances_' + wallet, JSON.stringify(balances)); }
+  renderLogs();
+});
+
+// faucet U
+faucetU.addEventListener('click', ()=>{
+  const id = (claimIdInput.value || '').trim();
+  if(!wallet && !id){ alert('Connect wallet or enter a name/email to claim'); return; }
+  if(wallet && !canClaimForWallet(wallet)){
+    alert('This wallet already claimed faucet once.');
+    return;
+  }
+  if(id && !canClaimForId(id)){
+    alert('This name/email already claimed faucet once.');
+    return;
+  }
+  const amount = 100;
+  balances.USDC = Math.round((balances.USDC + amount)*10000)/10000;
+  pushLog({event:'faucet', token:'tUSDC', amount, by: wallet || id});
+  if(wallet) markClaimForWallet(wallet);
+  if(id) markClaimForId(id);
+  if(wallet){ localStorage.setItem('demo_balances_' + wallet, JSON.stringify(balances)); }
+  renderLogs();
+});
+
+// encrypt/decrypt (base64 simulate)
+encryptBtn.addEventListener('click', ()=>{
+  const txt = plainEl.value || '';
+  if(!txt){ alert('Enter text to encrypt'); return; }
+  const enc = btoa(unescape(encodeURIComponent(txt)));
+  outputEl.textContent = enc;
+  pushLog({event:'encrypted', sample: txt.slice(0,30)});
+});
+
+decryptBtn.addEventListener('click', ()=>{
+  const enc = outputEl.textContent || '';
+  if(!enc || enc==='-'){ alert('No encrypted text'); return; }
+  const start = performance.now();
+  const fakeDelay = Math.floor(Math.random()*140)+60;
+  setTimeout(()=>{
+    try{
+      const dec = decodeURIComponent(escape(atob(enc)));
+      outputEl.textContent = dec;
+      const end = performance.now();
+      const dt = Math.round(end - start) + Math.round(fakeDelay/2);
+      decTimeEl.textContent = dt;
+      pushLog({event:'decrypted', time_ms: dt});
+    }catch(e){
+      alert('Decryption failed: invalid data');
+      pushLog({event:'decrypt_error'});
+    }
+  }, fakeDelay);
+});
+
+// swap system with swap count and optional sharing of APR (tweet intent)
+swapBtn.addEventListener('click', ()=>{
+  if(!wallet){ alert('Connect wallet first'); return; }
+  const from = fromToken.value;
+  const amount = parseFloat(amountInput.value);
+  if(!amount || amount<=0){ alert('Enter amount'); return; }
+  const inToken = from === 'ZAMA' ? 'ZAMA' : 'USDC';
+  const outToken = inToken === 'ZAMA' ? 'USDC' : 'ZAMA';
+  const feePct = 0.005;
+  if(balances[inToken] < amount){ alert('Insufficient balance'); return; }
+  let received;
+  if(inToken === 'ZAMA'){
+    received = amount * rate * (1 - feePct);
+  } else {
+    received = (amount / rate) * (1 - feePct);
+  }
+  received = Math.round(received * 10000)/10000;
+  balances[inToken] = Math.round((balances[inToken] - amount) * 10000)/10000;
+  balances[outToken] = Math.round((balances[outToken] + received) * 10000)/10000;
+  const tx = '0x' + Math.random().toString(16).substr(2,12);
+  pushLog({event:'swap', from:inToken, to:outToken, amount, received, tx});
+  incrementSwapCount();
+  localStorage.setItem('demo_balances_' + wallet, JSON.stringify(balances));
+  renderLogs();
+  alert('Swap complete: ' + amount + ' ' + inToken + ' → ' + received + ' ' + outToken + ' (fee ' + (feePct*100) + '%)');
+
+  if(shareAprCheckbox.checked){
+    // Example APR value (this is simulated)
+    const aprExample = "APR: 12.5%";
+    const text = encodeURIComponent(`Tried the Zama Demo Testnet swap — ${aprExample}. Try the demo: #ZamaDemo`);
+    const url = `https://twitter.com/intent/tweet?text=${text}`;
+    window.open(url, '_blank');
+  }
+});
+
+// node simulation
+function renderNodes(){
+  const count = 5;
+  const arr = [];
+  for(let i=1;i<=count;i++){
+    const on = Math.random()>0.08;
+    arr.push({id:i, status:on?'ONLINE':'OFFLINE'});
+  }
+  nodesEl.innerHTML = arr.map(n=>`Node ${n.id}: <strong style="color:${n.status==='ONLINE'?'#6ee7b7':'#ff6b6b'}">${n.status}</strong>`).join('<br>');
+  pushLog({event:'nodes_refreshed', nodes:arr.map(n=>n.status)});
+}
+refreshNodes.addEventListener('click', renderNodes);
+
+// block height ticker
+setInterval(()=>{
+  blockHeight += Math.floor(Math.random()*3);
+  blockHeightEl.textContent = blockHeight;
+},1500);
+
+// clear logs
+clearBtn.addEventListener('click', ()=>{
+  logs = [];
+  renderLogs();
+  pushLog({event:'logs_cleared'});
+});
+
+// welcome modal controls
+startBtn.addEventListener('click', ()=>{
+  welcome.style.display = 'none';
+  pushLog({event:'demo_started'});
+});
+skipBtn.addEventListener('click', ()=>{ welcome.style.display = 'none'; pushLog({event:'demo_skipped'}) });
+
+// initial render
+renderNodes();
+renderLogs();
+pushLog({event:'demo_loaded'});
+
+// keyboard shortcut: press W to toggle welcome
+document.addEventListener('keydown', (e)=>{ if(e.key && e.key.toLowerCase()==='w'){ welcome.style.display = welcome.style.display === 'none' ? 'flex' : 'none'; } });
+
 </script>
 </body>
 </html>
