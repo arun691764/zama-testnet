@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zama Demo Testnet (Single File Version)</title>
+
+<!-- CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+  --bg:#0f1724;
+  --card:#0b1220;
+  --accent:#ffd400;
+  --muted:#9aa6b2;
+  --glass: rgba(255,255,255,0.03);
+}
+*{box-sizing:border-box;font-family:Inter,system-ui;}
+body{background:linear-gradient(180deg,#04121a 0%, #071828 100%);color:#e6eef6;margin:0;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--glass);border-bottom:1px solid rgba(255,255,255,0.03);}
+.brand{display:flex;align-items:center;gap:12px;}
+.logo{width:48px;height:48px;border-radius:8px;border:2px solid rgba(255,255,255,0.06)}
+.container{display:flex;gap:18px;padding:20px;max-width:1200px;margin:auto;}
+.left{flex:1;display:flex;flex-direction:column;gap:16px;}
+.right{width:380px;display:flex;flex-direction:column;gap:16px;}
+.card{background:var(--glass);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);}
+.btn{background:var(--accent);color:#111;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:600;}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--muted);}
+textarea{width:100%;height:90px;padding:10px;border-radius:8px;background:#0002;color:#fff;border:1px solid #fff2;}
+pre{background:#020617;padding:8px;border-radius:8px;color:#bfe7ff;overflow:auto;max-height:140px;}
+.nodes{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.node{padding:8px;border-radius:8px;background:rgba(255,255,255,0.04);display:flex;justify-content:space-between;font-size:13px;}
+.footer{padding:18px 24px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;max-width:1200px;margin:auto;}
+@media(max-width:900px){.container{flex-direction:column}.right{width:100%}}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="https://i.imgur.com/9A8hL0Q.png" class="logo" />
+    <div>
+      <h2>Zama Demo Testnet (Advanced)</h2>
+      <p style="color:#9aa6b2;margin:0">Simulation Only — No Real Blockchain</p>
+    </div>
+  </div>
+
+  <div>
+    <strong>Block:</strong> <span id="blockHeight">0</span>
+  </div>
+
+  <button id="connectBtn" class="btn">Connect Wallet</button>
+</header>
+
+<main class="container">
+
+  <!-- LEFT PANEL -->
+  <section class="left">
+
+    <div class="card">
+      <h3>Wallet</h3>
+      <p>Address: <span id="walletAddr">Not connected</span></p>
+      <p>Balance: <span id="balance">0 tZAMA</span></p>
+      <button id="faucetBtn" class="btn">Get Test Tokens</button>
+    </div>
+
+    <div class="card">
+      <h3>Encrypt / Decrypt</h3>
+      <textarea id="plain" placeholder="Enter text..."></textarea>
+      <br><br>
+      <button id="encryptBtn" class="btn">Encrypt</button>
+      <button id="decryptBtn" class="btn ghost">Decrypt</button>
+      <p>Decryption Time: <span id="decryptTime">-</span> ms</p>
+      <pre id="output">-</pre>
+    </div>
+
+    <div class="card">
+      <h3>Transactions</h3>
+      <button id="txBtn" class="btn">Run TX</button>
+      <button id="fastTxBtn" class="btn ghost">Fast Confirm</button>
+      <pre id="lastTx">-</pre>
+    </div>
+
+  </section>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right">
+
+    <div class="card">
+      <h3>MPC Nodes</h3>
+      <div id="nodes" class="nodes"></div>
+    </div>
+
+    <div class="card">
+      <h3>Charts</h3>
+      <canvas id="timeChart" height="120"></canvas>
+    </div>
+
+    <div class="card logs">
+      <h3>Logs</h3>
+      <pre id="logs">{}</pre>
+    </div>
+
+  </aside>
+
+</main>
+
+<footer class="footer">
+  <span>Demo Inspired by Zama Protocol Docs</span>
+  <span>Deployed via GitHub Pages</span>
+</footer>
+
+<script>
+/* ALL JS MERGED HERE */
+
+const walletAddrEl=document.getElementById('walletAddr');
+const balanceEl=document.getElementById('balance');
+const connectBtn=document.getElementById('connectBtn');
+const faucetBtn=document.getElementById('faucetBtn');
+const encryptBtn=document.getElementById('encryptBtn');
+const decryptBtn=document.getElementById('decryptBtn');
+const plainEl=document.getElementById('plain');
+const outputEl=document.getElementById('output');
+const decryptTimeEl=document.getElementById('decryptTime');
+const txBtn=document.getElementById('txBtn');
+const fastTxBtn=document.getElementById('fastTxBtn');
+const lastTxEl=document.getElementById('lastTx');
+const logsEl=document.getElementById('logs');
+const nodesEl=document.getElementById('nodes');
+const blockHeightEl=document.getElementById('blockHeight');
+
+let wallet=null,balance=0,logs=[],blockHeight=10000;
+
+function logEvent(o){
+  o.time=new Date().toLocaleTimeString();
+  logs.unshift(o);
+  logsEl.textContent=logs.slice(0,50).map(x=>JSON.stringify(x,null,2)).join("\n\n");
+}
+
+function randHash(){return"0x"+Math.random().toString(16).substr(2,64);}
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+
+/* Wallet */
+connectBtn.onclick=()=>{
+  if(!wallet){
+    wallet="0x"+Math.random().toString(16).substr(2,12);
+    walletAddrEl.textContent=wallet;
+    connectBtn.textContent="Disconnect";
+    logEvent({event:"wallet_connected",wallet});
+  }else{
+    logEvent({event:"wallet_disconnected"});
+    wallet=null;
+    walletAddrEl.textContent="Not connected";
+    connectBtn.textContent="Connect Wallet";
+  }
+};
+
+/* Faucet */
+faucetBtn.onclick=()=>{
+  if(!wallet) return alert("Connect wallet!");
+  balance+=100;
+  balanceEl.textContent=balance+" tZAMA";
+  logEvent({event:"faucet",amount:100});
+};
+
+/* Encrypt */
+encryptBtn.onclick=()=>{
+  let t=plainEl.value;
+  if(!t) return alert("Enter text");
+  let enc=btoa(unescape(encodeURIComponent(t)));
+  outputEl.textContent=enc;
+  logEvent({event:"encrypted"});
+};
+
+/* Decrypt */
+decryptBtn.onclick=()=>{
+  let enc=outputEl.textContent;
+  if(!enc||enc=="-") return alert("No encrypted text");
+  let start=performance.now();
+  let delay=rand(80,200);
+  setTimeout(()=>{
+      let dec=decodeURIComponent(escape(atob(enc)));
+      let t=(performance.now()-start)+delay/2;
+      decryptTimeEl.textContent=Math.round(t);
+      outputEl.textContent=dec;
+      logEvent({event:"decrypted",time_ms:t});
+      updateChart(t);
+  },delay);
+};
+
+/* Run TX */
+txBtn.onclick=()=>{
+  if(!wallet) return alert("Connect wallet!");
+  if(balance<1) return alert("Use faucet first!");
+  let tx=randHash();
+  lastTxEl.textContent=JSON.stringify({tx,status:"pending"},null,2);
+  logEvent({event:"tx_submitted",tx});
+  setTimeout(()=>{
+    let gas=(Math.random()*0.005).toFixed(6);
+    let time=(Math.random()*2).toFixed(2);
+    lastTxEl.textContent=JSON.stringify({tx,status:"confirmed",gas,time},null,2);
+    balance--; balanceEl.textContent=balance+" tZAMA";
+    logEvent({event:"tx_confirmed"});
+    updateChart(time*1000);
+  },rand(700,1800));
+};
+
+/* Fast TX */
+fastTxBtn.onclick=()=>{
+  let tx=randHash();
+  lastTxEl.textContent=JSON.stringify({tx,status:"confirmed",gas:"0.0001",time:"0.3"},null,2);
+  if(wallet){ balance--; balanceEl.textContent=balance+" tZAMA"; }
+  logEvent({event:"tx_fast"});
+  updateChart(300);
+};
+
+/* MPC Nodes */
+function loadNodes(){
+  nodesEl.innerHTML="";
+  for(let i=1;i<=5;i++){
+    let ok=Math.random()>0.1;
+    nodesEl.innerHTML+=`
+    <div class="node">
+      <span>NODE ${i}</span>
+      <span style="color:${ok?"lightgreen":"red"}">${ok?"ONLINE":"OFFLINE"}</span>
+    </div>`;
+  }
+  logEvent({event:"nodes_refreshed"});
+}
+loadNodes();
+
+/* Block height */
+setInterval(()=>{
+  blockHeight+=rand(1,5);
+  blockHeightEl.textContent=blockHeight;
+},1500);
+
+/* Chart.js */
+const ctx=document.getElementById('timeChart').getContext('2d');
+const chart=new Chart(ctx,{
+  type:'line',
+  data:{labels:[],datasets:[{label:"Process Time (ms)",data:[],borderWidth:2}]},
+  options:{scales:{y:{beginAtZero:true}}}
+});
+function updateChart(v){
+  let t=new Date().toLocaleTimeString();
+  if(chart.data.labels.length>15){chart.data.labels.shift();chart.data.datasets[0].data.shift();}
+  chart.data.labels.push(t); chart.data.datasets[0].data.push(v);
+  chart.update();
+}
+
+</script>
+</body>
+</html>
