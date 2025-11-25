@@ -1,66 +1,86 @@
+<!--
+Zama Demo Testnet - Single-file HTML (No Encrypt/Decrypt section)
+Drop this file into a GitHub repo and open via GitHub Pages.
+Logo: uses local path uploaded in your session (/mnt/data/Screenshot.png).
+If you prefer to embed the logo, replace the img src with a base64 data URL.
+-->
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Zama Demo Testnet - Demo</title>
-<style>
-:root{--bg:#071827;--card:#0b1220;--accent:#ffd400;--muted:#9aa6b2;--glass:rgba(255,255,255,0.02);--success:#16a34a;}
-*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;padding:0;color:#e6eef6}
-body{background:linear-gradient(180deg,#04121a 0%, #071828 100%);min-height:100vh;}
-.container{max-width:1100px;margin:20px auto;display:flex;gap:16px;padding:18px}
-.left{flex:1;display:flex;flex-direction:column;gap:14px}
-.right{width:360px;display:flex;flex-direction:column;gap:14px}
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--glass)}
-.logo{height:44px;border-radius:8px;object-fit:cover}
-.btn{background:var(--accent);color:#111;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
-.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-.small{font-size:13px;color:var(--muted)}
-.area{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-.row{display:flex;gap:8px;align-items:center}
-.actions{display:flex;gap:8px;margin-top:8px}
-.logbox{background:#020617;padding:10px;border-radius:8px;color:#bfe7ff;overflow:auto;height:220px;white-space:pre-wrap}
-.swap-form input[type=number]{width:140px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-.center{display:flex;align-items:center;justify-content:center;flex-direction:column}
-.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:12px}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Zama Demo Testnet — v4 (No Encrypt/Decrypt)</title>
+  <style>
+    :root{
+      --bg-start:#00111a;
+      --bg-end:#041827;
+      --card:#071a2a;
+      --accent:#ffd400;
+      --muted:#9aa6b2;
+      --glass: rgba(255,255,255,0.03);
+      --accent-dark:#f0b800;
+    }
+    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;padding:0;color:#e6eef6}
+    body{background:linear-gradient(180deg,var(--bg-start) 0%, var(--bg-end) 100%);min-height:100vh}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-bottom:1px solid rgba(255,255,255,0.02)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;object-fit:cover;border:2px solid rgba(0,0,0,0.15)}
+    .title{font-weight:700;font-size:18px}
+    .small{font-size:13px;color:var(--muted)}
+    .container{max-width:1100px;margin:22px auto;display:flex;gap:18px;padding:10px}
+    .left{flex:1;display:flex;flex-direction:column;gap:14px}
+    .right{width:380px;display:flex;flex-direction:column;gap:14px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .btn{background:var(--accent);color:#061320;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+    .area{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .row{display:flex;gap:8px;align-items:center}
+    .actions{display:flex;gap:8px;margin-top:8px}
+    .logbox{background:#020617;padding:10px;border-radius:8px;color:#bfe7ff;overflow:auto;height:220px;white-space:pre-wrap}
+    .center{display:flex;align-items:center;justify-content:center;flex-direction:column}
+    .footer{text-align:center;color:var(--muted);font-size:13px;margin-top:12px}
 
-/* Welcome modal */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:200}
-.modal{background:#071827;padding:20px;border-radius:12px;max-width:520px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
-.modal h2{margin-bottom:8px}
-.modal p{color:var(--muted);margin-bottom:12px}
+/* Welcome modal - larger + colorful */
+    .modal-backdrop{position:fixed;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.55));display:flex;align-items:center;justify-content:center;z-index:200}
+    .modal{background:linear-gradient(180deg,#071827 0%, #0b2740 100%);padding:28px;border-radius:16px;max-width:720px;border:2px solid rgba(255,255,255,0.03);box-shadow:0 20px 60px rgba(2,6,23,0.75);display:flex;gap:20px;align-items:center}
+    .modal .left{flex:0 0 140px}
+    .modal .left img{width:140px;height:140px;border-radius:14px;object-fit:cover;border:3px solid rgba(255,255,255,0.04)}
+    .modal h2{margin:0 0 6px 0;font-size:26px}
+    .modal p{color:var(--muted);margin:0 0 12px 0}
+    .modal .cta{display:flex;gap:10px;margin-top:6px}
 
 /* responsive */
-@media(max-width:900px){.container{flex-direction:column;padding:12px}.right{width:100%}}
-</style>
+    @media(max-width:900px){.container{flex-direction:column;padding:12px}.right{width:100%}.modal{flex-direction:column;text-align:center}.modal .left{margin-bottom:8px}}
+  </style>
 </head>
 <body>
 
-<!-- Welcome modal (shows on load) -->
-<div id="welcome" class="modal-backdrop" role="dialog" aria-modal="true" style="display:flex;">
-  <div class="modal">
-    <div style="display:flex;gap:12px;align-items:center">
-      <!-- Use your uploaded logo path here -->
-      <img src="/mnt/data/Screenshot.png" class="logo" alt="logo"/>
-      <div>
-        <h2>Welcome to Zama Demo Testnet</h2>
-        <p class="small">A simulated demo interface — educational purposes only. Try the faucet, swap tokens, and the encrypt/decrypt demo. Your claims are stored locally (one claim per wallet or per name/email).</p>
-      </div>
+<!-- Welcome modal -->
+<div id="welcome" class="modal-backdrop" role="dialog" aria-modal="true">
+  <div class="modal" aria-labelledby="welcomeTitle">
+    <div class="left">
+      <!-- LOCAL LOGO PATH: the platform will map /mnt/data/Screenshot.png to a URL for you.
+           If you upload logo to your repo, set src="./Screenshot.png" or "assets/logo.png" instead. -->
+      <img src="/mnt/data/Screenshot.png" alt="logo">
     </div>
-    <div style="display:flex;justify-content:space-between;margin-top:12px;gap:8px">
-      <button id="startBtn" class="btn">Start Demo</button>
-      <button id="skipBtn" class="btn ghost">Skip</button>
+    <div style="flex:1">
+      <h2 id="welcomeTitle">Welcome to the Zama Demo Testnet</h2>
+      <p class="small">A live-feeling demo UI simulating wallet connect, faucet claims (one per wallet/email), swap flows, and transaction logs — for demo & community use only.</p>
+      <div class="cta">
+        <button id="startBtn" class="btn">Start Demo</button>
+        <button id="skipBtn" class="btn ghost">Skip</button>
+      </div>
+      <div style="margin-top:10px" class="small">Project: <a href="https://docs.zama.org/protocol" target="_blank" style="color:#9ae6b4">Zama Protocol</a> • Created by <strong>@AmitKum955</strong></div>
     </div>
   </div>
 </div>
 
-<header class="topbar">
-  <div style="display:flex;gap:12px;align-items:center">
+<header class="topbar" role="banner">
+  <div class="brand">
     <img src="/mnt/data/Screenshot.png" class="logo" alt="logo"/>
     <div>
-      <div style="font-weight:700">Zama Demo Testnet</div>
-      <div class="small">Simulated demo interface — no real funds or blockchain</div>
+      <div class="title">Zama Demo Testnet</div>
+      <div class="small">Simulated demo — no real blockchain interactions</div>
     </div>
   </div>
   <div style="display:flex;gap:12px;align-items:center">
@@ -69,7 +89,7 @@ body{background:linear-gradient(180deg,#04121a 0%, #071828 100%);min-height:100v
   </div>
 </header>
 
-<main class="container">
+<main class="container" aria-live="polite">
   <section class="left">
     <div class="card">
       <h3>Wallet & Faucet</h3>
@@ -85,49 +105,44 @@ body{background:linear-gradient(180deg,#04121a 0%, #071828 100%);min-height:100v
       </div>
 
       <div style="margin-top:10px" class="small">
-        <label>Name or Email (required to claim faucet once)</label><br/>
+        <label for="claimId">Name or Email (required to claim faucet once)</label><br/>
         <input id="claimId" class="area" placeholder="Enter your name or email"/>
       </div>
 
       <div class="actions" style="margin-top:10px">
-        <button id="faucetZ" class="btn">Get 100 tZAMA (Claim)</button>
-        <button id="faucetU" class="btn ghost">Get 100 tUSDC (Claim)</button>
+        <button id="faucetZ" class="btn">Claim 100 tZAMA</button>
+        <button id="faucetU" class="btn ghost">Claim 100 tUSDC</button>
         <button id="clearBtn" class="btn ghost">Clear Logs</button>
       </div>
 
-      <div style="margin-top:8px" class="small">Faucet rule: one claim per wallet OR per name/email. Claims are stored in your browser (localStorage).</div>
-    </div>
-
-    <div class="card">
-      <h3>Encrypt / Decrypt Demo</h3>
-      <div class="small">This demo uses simple Base64 encode/decode to simulate encryption & decryption times.</div>
-      <textarea id="plain" class="area" placeholder="Enter text to encrypt"></textarea>
-      <div class="actions">
-        <button id="encryptBtn" class="btn">Encrypt</button>
-        <button id="decryptBtn" class="btn ghost">Decrypt</button>
-      </div>
-      <div style="margin-top:10px">
-        <label class="small">Output</label>
-        <pre id="output" class="logbox">-</pre>
-        <div class="small">Decryption time: <span id="decTime">-</span> ms</div>
-      </div>
+      <div style="margin-top:8px" class="small">Faucet rule: one claim per wallet OR per name/email. Claims saved in your browser for demo purposes.</div>
     </div>
 
     <div class="card">
       <h3>Swap (Simple)</h3>
-      <div class="small">Swap between tZAMA and tUSDC with a simulated rate. Swap count per wallet is tracked.</div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:10px" class="swap-form">
+      <div class="small">Choose token to swap from and token to receive. Swap count per wallet is tracked. After swap you can optionally share a prepared post on X (Twitter).</div>
+
+      <div style="display:flex;gap:8px;align-items:center;margin-top:10px" class="swap-form" aria-label="swap form">
+        <label class="small" for="fromToken" style="display:none">From</label>
         <select id="fromToken" class="area" style="width:120px">
           <option value="ZAMA">tZAMA</option>
           <option value="USDC">tUSDC</option>
         </select>
-        <input id="amount" type="number" min="0" step="0.1" placeholder="Amount" />
+
+        <label class="small" for="toToken" style="display:none">To</label>
+        <select id="toToken" class="area" style="width:120px">
+          <option value="USDC">tUSDC</option>
+          <option value="ZAMA">tZAMA</option>
+        </select>
+
+        <input id="amount" type="number" min="0" step="0.1" placeholder="Amount" aria-label="amount" />
         <button id="swapBtn" class="btn">Swap</button>
       </div>
+
       <div style="margin-top:10px" class="small">
         <div>Exchange rate: <span id="rateDisplay">1 tZAMA = 1.2 tUSDC</span></div>
         <div>Swaps done (this wallet): <span id="swapCount">0</span></div>
-        <div style="margin-top:6px">
+        <div style="margin-top:8px">
           <label><input type="checkbox" id="shareApr" /> Share APR on X after swap</label>
         </div>
       </div>
@@ -158,25 +173,17 @@ body{background:linear-gradient(180deg,#04121a 0%, #071828 100%);min-height:100v
   </aside>
 </main>
 
-<div class="footer">Demo built using <a href="https://docs.zama.org/protocol" target="_blank" style="color:#a5b4fc">Zama Protocol docs</a> as reference. Exported single-file for easy GitHub Pages deploy.</div>
+<div class="footer">Demo built using <a href="https://docs.zama.org/protocol" target="_blank" style="color:#a5b4fc">Zama Protocol docs</a> as reference. Exported single-file for easy GitHub Pages deploy. Created by <strong>@AmitKum955</strong></div>
 
 <script>
-/* Demo v2 script with:
-   - welcome modal using uploaded logo path (/mnt/data/Screenshot.png)
-   - faucet: one claim per wallet or per name/email (localStorage)
-   - swap count per wallet (localStorage)
-   - share APR on X (opens tweet intent)
-*/
+/* Demo v4 script (no encrypt/decrypt section). Uses localStorage for simple persistence.
+   IMPORTANT: The logo src currently points to /mnt/data/Screenshot.png (uploaded in session).
+   If hosting on GitHub, place the logo file in the repo root (Screenshot.png) and change src to "./Screenshot.png" */
 const connectBtn = document.getElementById('connectBtn');
 const walletAddrEl = document.getElementById('walletAddr');
 const balancesEl = document.getElementById('balances');
 const faucetZ = document.getElementById('faucetZ');
 const faucetU = document.getElementById('faucetU');
-const encryptBtn = document.getElementById('encryptBtn');
-const decryptBtn = document.getElementById('decryptBtn');
-const plainEl = document.getElementById('plain');
-const outputEl = document.getElementById('output');
-const decTimeEl = document.getElementById('decTime');
 const logsEl = document.getElementById('logs');
 const clearBtn = document.getElementById('clearBtn');
 const nodesEl = document.getElementById('nodes');
@@ -187,6 +194,7 @@ const skipBtn = document.getElementById('skipBtn');
 const welcome = document.getElementById('welcome');
 const swapBtn = document.getElementById('swapBtn');
 const fromToken = document.getElementById('fromToken');
+const toToken = document.getElementById('toToken');
 const amountInput = document.getElementById('amount');
 const rateDisplay = document.getElementById('rateDisplay');
 const lastTx = document.getElementById('lastTx');
@@ -209,15 +217,16 @@ function pushLog(obj){
 function renderLogs(){
   logsEl.textContent = logs.slice(0,200).map(l=>JSON.stringify(l,null,2)).join('\\n\\n');
   balancesEl.textContent = `tZAMA: ${balances.ZAMA} • tUSDC: ${balances.USDC}`;
-  const confirmed = logs.find(l=>l.event==='tx_confirmed');
-  lastTx.textContent = confirmed ? ('Last TX: '+confirmed.tx) : 'Last TX: -';
+  const lastConfirmed = logs.find(l=>l.event==='tx_confirmed' || l.event==='swap');
+  lastTx.textContent = lastConfirmed ? ('Last TX: '+(lastConfirmed.tx || lastConfirmed.txHash || lastConfirmed.txId || '—')) : 'Last TX: -';
   swapCountEl.textContent = getSwapCount();
 }
 
 // localStorage helpers
 function storageKeyForWallet(addr){ return 'demo_claims_wallet_' + addr; }
-function storageKeyForId(id){ return 'demo_claims_id_' + id; }
+function storageKeyForEmail(id){ return 'demo_claims_id_' + id; }
 function storageSwapKey(addr){ return 'demo_swap_count_' + addr; }
+function storageBalancesKey(addr){ return 'demo_balances_' + addr; }
 
 function getSwapCount(){
   if(!wallet) return 0;
@@ -239,10 +248,9 @@ connectBtn.addEventListener('click', ()=>{
     walletAddrEl.textContent = wallet;
     connectBtn.textContent = 'Disconnect';
     pushLog({event:'wallet_connected', address:wallet});
-    // load balances from storage if exist
-    const balKey = 'demo_balances_' + wallet;
-    const b = localStorage.getItem(balKey);
-    if(b){ balances = JSON.parse(b); }
+    // load balances if previously saved
+    const saved = localStorage.getItem(storageBalancesKey(wallet));
+    if(saved){ balances = JSON.parse(saved); }
     renderLogs();
   } else {
     pushLog({event:'wallet_disconnected', address:wallet});
@@ -253,13 +261,13 @@ connectBtn.addEventListener('click', ()=>{
   }
 });
 
-// faucet claim checks
+// faucet logic: one claim per wallet OR per name/email (stored in localStorage)
 function canClaimForWallet(addr){
   const key = storageKeyForWallet(addr);
   return !localStorage.getItem(key);
 }
 function canClaimForId(id){
-  const key = storageKeyForId(id);
+  const key = storageKeyForEmail(id);
   return !localStorage.getItem(key);
 }
 function markClaimForWallet(addr){
@@ -267,89 +275,48 @@ function markClaimForWallet(addr){
   localStorage.setItem(key, JSON.stringify({time: new Date().toISOString()}));
 }
 function markClaimForId(id){
-  const key = storageKeyForId(id);
+  const key = storageKeyForEmail(id);
   localStorage.setItem(key, JSON.stringify({time: new Date().toISOString()}));
 }
 
-// faucet Z
 faucetZ.addEventListener('click', ()=>{
   const id = (claimIdInput.value || '').trim();
   if(!wallet && !id){ alert('Connect wallet or enter a name/email to claim'); return; }
-  if(wallet && !canClaimForWallet(wallet)){
-    alert('This wallet already claimed faucet once.');
-    return;
-  }
-  if(id && !canClaimForId(id)){
-    alert('This name/email already claimed faucet once.');
-    return;
-  }
+  if(wallet && !canClaimForWallet(wallet)){ alert('This wallet already claimed faucet once.'); return; }
+  if(id && !canClaimForId(id)){ alert('This name/email already claimed faucet once.'); return; }
   const amount = 100;
   balances.ZAMA = Math.round((balances.ZAMA + amount)*10000)/10000;
   pushLog({event:'faucet', token:'tZAMA', amount, by: wallet || id});
   if(wallet) markClaimForWallet(wallet);
   if(id) markClaimForId(id);
-  if(wallet){ localStorage.setItem('demo_balances_' + wallet, JSON.stringify(balances)); }
+  if(wallet){ localStorage.setItem(storageBalancesKey(wallet), JSON.stringify(balances)); }
   renderLogs();
 });
 
-// faucet U
 faucetU.addEventListener('click', ()=>{
   const id = (claimIdInput.value || '').trim();
   if(!wallet && !id){ alert('Connect wallet or enter a name/email to claim'); return; }
-  if(wallet && !canClaimForWallet(wallet)){
-    alert('This wallet already claimed faucet once.');
-    return;
-  }
-  if(id && !canClaimForId(id)){
-    alert('This name/email already claimed faucet once.');
-    return;
-  }
+  if(wallet && !canClaimForWallet(wallet)){ alert('This wallet already claimed faucet once.'); return; }
+  if(id && !canClaimForId(id)){ alert('This name/email already claimed faucet once.'); return; }
   const amount = 100;
   balances.USDC = Math.round((balances.USDC + amount)*10000)/10000;
   pushLog({event:'faucet', token:'tUSDC', amount, by: wallet || id});
   if(wallet) markClaimForWallet(wallet);
   if(id) markClaimForId(id);
-  if(wallet){ localStorage.setItem('demo_balances_' + wallet, JSON.stringify(balances)); }
+  if(wallet){ localStorage.setItem(storageBalancesKey(wallet), JSON.stringify(balances)); }
   renderLogs();
 });
 
-// encrypt/decrypt (base64 simulate)
-encryptBtn.addEventListener('click', ()=>{
-  const txt = plainEl.value || '';
-  if(!txt){ alert('Enter text to encrypt'); return; }
-  const enc = btoa(unescape(encodeURIComponent(txt)));
-  outputEl.textContent = enc;
-  pushLog({event:'encrypted', sample: txt.slice(0,30)});
-});
-
-decryptBtn.addEventListener('click', ()=>{
-  const enc = outputEl.textContent || '';
-  if(!enc || enc==='-'){ alert('No encrypted text'); return; }
-  const start = performance.now();
-  const fakeDelay = Math.floor(Math.random()*140)+60;
-  setTimeout(()=>{
-    try{
-      const dec = decodeURIComponent(escape(atob(enc)));
-      outputEl.textContent = dec;
-      const end = performance.now();
-      const dt = Math.round(end - start) + Math.round(fakeDelay/2);
-      decTimeEl.textContent = dt;
-      pushLog({event:'decrypted', time_ms: dt});
-    }catch(e){
-      alert('Decryption failed: invalid data');
-      pushLog({event:'decrypt_error'});
-    }
-  }, fakeDelay);
-});
-
-// swap system with swap count and optional sharing of APR (tweet intent)
+// swap system with selectable tokens and swap count; shows tx id and option to share on X
 swapBtn.addEventListener('click', ()=>{
   if(!wallet){ alert('Connect wallet first'); return; }
   const from = fromToken.value;
+  const to = toToken.value;
+  if(from === to){ alert('Select two different tokens'); return; }
   const amount = parseFloat(amountInput.value);
   if(!amount || amount<=0){ alert('Enter amount'); return; }
   const inToken = from === 'ZAMA' ? 'ZAMA' : 'USDC';
-  const outToken = inToken === 'ZAMA' ? 'USDC' : 'ZAMA';
+  const outToken = to === 'ZAMA' ? 'ZAMA' : 'USDC';
   const feePct = 0.005;
   if(balances[inToken] < amount){ alert('Insufficient balance'); return; }
   let received;
@@ -364,20 +331,21 @@ swapBtn.addEventListener('click', ()=>{
   const tx = '0x' + Math.random().toString(16).substr(2,12);
   pushLog({event:'swap', from:inToken, to:outToken, amount, received, tx});
   incrementSwapCount();
-  localStorage.setItem('demo_balances_' + wallet, JSON.stringify(balances));
+  // persist balances
+  if(wallet){ localStorage.setItem(storageBalancesKey(wallet), JSON.stringify(balances)); }
   renderLogs();
-  alert('Swap complete: ' + amount + ' ' + inToken + ' → ' + received + ' ' + outToken + ' (fee ' + (feePct*100) + '%)');
-
+  // share on X if checked
+  const projectLink = 'https://docs.zama.org/protocol';
+  const createdBy = '@AmitKum955';
   if(shareAprCheckbox.checked){
-    // Example APR value (this is simulated)
     const aprExample = "APR: 12.5%";
-    const text = encodeURIComponent(`Tried the Zama Demo Testnet swap — ${aprExample}. Try the demo: #ZamaDemo`);
-    const url = `https://twitter.com/intent/tweet?text=${text}`;
-    window.open(url, '_blank');
+    const text = encodeURIComponent(`Tried the Zama Demo Testnet! Swapped ${amount} ${inToken} → ${received} ${outToken}. ${aprExample} Learn more: ${projectLink} Created by ${createdBy}`);
+    window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
   }
+  alert(`Swapped ${amount} ${inToken} → ${received} ${outToken} (tx ${tx})`);
 });
 
-// node simulation
+// nodes simulation
 function renderNodes(){
   const count = 5;
   const arr = [];
@@ -391,33 +359,23 @@ function renderNodes(){
 refreshNodes.addEventListener('click', renderNodes);
 
 // block height ticker
-setInterval(()=>{
-  blockHeight += Math.floor(Math.random()*3);
-  blockHeightEl.textContent = blockHeight;
-},1500);
+setInterval(()=>{ blockHeight += Math.floor(Math.random()*3); blockHeightEl.textContent = blockHeight; },1500);
 
 // clear logs
-clearBtn.addEventListener('click', ()=>{
-  logs = [];
-  renderLogs();
-  pushLog({event:'logs_cleared'});
-});
+clearBtn.addEventListener('click', ()=>{ logs = []; renderLogs(); pushLog({event:'logs_cleared'}); });
 
-// welcome modal controls
-startBtn.addEventListener('click', ()=>{
-  welcome.style.display = 'none';
-  pushLog({event:'demo_started'});
-});
-skipBtn.addEventListener('click', ()=>{ welcome.style.display = 'none'; pushLog({event:'demo_skipped'}) });
+// welcome controls
+startBtn.addEventListener('click', ()=>{ welcome.style.display = 'none'; pushLog({event:'demo_started'}); });
+skipBtn.addEventListener('click', ()=>{ welcome.style.display = 'none'; pushLog({event:'demo_skipped'}); });
 
 // initial render
 renderNodes();
 renderLogs();
 pushLog({event:'demo_loaded'});
 
-// keyboard shortcut: press W to toggle welcome
+// keyboard: W toggles welcome
 document.addEventListener('keydown', (e)=>{ if(e.key && e.key.toLowerCase()==='w'){ welcome.style.display = welcome.style.display === 'none' ? 'flex' : 'none'; } });
-
 </script>
+
 </body>
 </html>
